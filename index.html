@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#101910" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="DeerTraceR Pro" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="description" content="DeerTraceR Pro iPhone edition - hunting tracker, trail cam intel, sightings log, stand selector, and forecast dashboard." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Ctext y=%22.9em%22 font-size=%2256%22%3E%F0%9F%A6%8C%3C/text%3E%3C/svg%3E" />
+
+  
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+
+  <title>DeerTraceR Pro</title>
+  <style>
+    :root{
+      --bg:#0c120d; --panel:#101911; --panel-2:#152117; --line:#29402f; --text:#edf3ea; --muted:#a9b7ac;
+      --accent:#c86d1f; --accent-2:#7cb342; --danger:#b33b2e; --warn:#d8a228; --good:#39a96b;
+      --shadow:0 12px 40px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:radial-gradient(circle at top,#172117 0,#0c120d 45%,#080b09 100%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    body{min-height:100vh}
+    .app{max-width:1450px;margin:0 auto;padding:18px 18px 110px}
+    .topbar{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:14px 18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,rgba(22,33,23,.95),rgba(11,17,12,.95));box-shadow:var(--shadow);position:sticky;top:8px;z-index:20;backdrop-filter:blur(12px)}
+    .brand{display:flex;gap:14px;align-items:center}.logo{width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,#2f4f2f,#172217);display:grid;place-items:center;font-size:28px;border:1px solid #3f6244}.brand h1{margin:0;font-size:28px;letter-spacing:.4px}.brand small{display:block;color:var(--muted);margin-top:3px}
+    .hud{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.pill{padding:9px 12px;border-radius:999px;background:#121c13;border:1px solid var(--line);color:var(--muted);font-size:13px}.pill strong{color:var(--text)}
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:16px}
+    .card{background:linear-gradient(180deg,rgba(18,28,19,.94),rgba(12,18,13,.98));border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+    .hero-title{font-size:36px;line-height:1.05;margin:8px 0 12px}.sub{color:var(--muted);font-size:15px;line-height:1.55}
+    .cta-row,.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    button,.btn{appearance:none;border:none;border-radius:14px;padding:12px 16px;background:#1a281c;color:var(--text);border:1px solid var(--line);font-weight:700;cursor:pointer}
+    button.primary{background:linear-gradient(180deg,#cf7726,#9d5518);border-color:#d07a2e} button.success{background:linear-gradient(180deg,#2d8a54,#216640);border-color:#46a96f}
+    button.ghost{background:#121a13;color:var(--muted)} button.warn{background:linear-gradient(180deg,#b68d28,#87681c)}
+    button:hover{filter:brightness(1.05)}
+    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}.metric{padding:16px;border-radius:16px;background:#0f1710;border:1px solid #213423}.metric .k{font-size:28px;font-weight:800;margin-top:8px}.metric .t{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px}
+    .main{display:grid;grid-template-columns:260px 1fr;gap:16px;margin-top:16px}
+    .sidebar{position:sticky;top:102px;height:fit-content}.nav{display:flex;flex-direction:column;gap:8px}.nav button{text-align:left}.nav button.active{background:linear-gradient(180deg,#243926,#162118);color:#fff;border-color:#486b4c}
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.section-head h2,.section-head h3{margin:0}
+    .tag{padding:5px 10px;border-radius:999px;font-size:12px;border:1px solid var(--line);color:var(--muted)}
+    .table{width:100%;border-collapse:collapse}.table th,.table td{padding:11px 10px;border-bottom:1px solid #213423;text-align:left;font-size:14px}.table th{color:#cfd8d1;font-size:12px;letter-spacing:1px;text-transform:uppercase}.table tr:last-child td{border-bottom:none}
+    .map{position:relative;min-height:440px;border-radius:18px;border:1px solid #254128;overflow:hidden;background:
+      radial-gradient(circle at 20% 18%, rgba(121,165,70,.18), transparent 18%),
+      radial-gradient(circle at 70% 65%, rgba(69,116,170,.22), transparent 20%),
+      linear-gradient(135deg,#1e3322,#18251b 35%,#112015 70%,#0e1710 100%)}
+    .terrain{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);background-size:44px 44px;opacity:.6}
+    .path{position:absolute;height:9px;background:#7b6e4d;border-radius:999px;box-shadow:0 0 0 2px rgba(40,31,15,.14)}
+    .water{position:absolute;right:5%;bottom:6%;width:32%;height:24%;background:radial-gradient(circle at 35% 30%,#4f98a3,#204f58 65%,#17363a);border-radius:50% 35% 42% 40%/48% 40% 50% 36%;opacity:.82}
+    .marker{position:absolute;transform:translate(-50%,-50%);padding:6px 9px;border-radius:999px;background:#101911;border:1px solid #35583b;font-size:12px;white-space:nowrap}.marker.deer{border-color:#b7772a}.marker.cam{border-color:#5f8acb}.marker.stand{border-color:#58a06b}.marker.plot{border-color:#a0a856}
+    .mini-chart{display:flex;align-items:flex-end;gap:8px;height:170px;padding-top:10px}.bar{flex:1;border-radius:10px 10px 4px 4px;background:linear-gradient(180deg,#d4802f,#6e451d);position:relative}.bar span{position:absolute;bottom:-26px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--muted)}.bar i{position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-style:normal;font-size:12px;color:#f4dcc1}
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.form-grid .full{grid-column:1 / -1}
+    label{display:block;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+    input,select,textarea{width:100%;background:#0f1710;color:var(--text);border:1px solid #27402b;border-radius:12px;padding:12px 13px;font:inherit} textarea{min-height:100px;resize:vertical}
+    .list{display:flex;flex-direction:column;gap:10px}.item{border:1px solid #213423;border-radius:16px;padding:14px;background:#0f1710}
+    .item-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:8px}.muted{color:var(--muted)}
+    .split{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}
+    .upload{border:2px dashed #426446;border-radius:18px;padding:24px;text-align:center;background:#101911}.thumbs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
+    .thumb{border:1px solid #27402b;border-radius:18px;overflow:hidden;background:#0f1710}.thumb img{width:100%;height:180px;object-fit:cover;background:#09110a}.thumb .body{padding:12px}.badge{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700}.badge.good{background:rgba(57,169,107,.14);color:#6fd495}.badge.warn{background:rgba(216,162,40,.16);color:#ecc358}.badge.bad{background:rgba(179,59,46,.16);color:#e5897d}
+    .forecast{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.day{padding:14px;border-radius:16px;background:#0f1710;border:1px solid #213423;text-align:center}.day strong{display:block;margin:8px 0 4px}
+    .footer-nav{display:none}
+    @media (max-width: 1100px){.hero,.main,.split,.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.sidebar{display:none}.footer-nav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;gap:8px;padding:10px;border-radius:18px;background:rgba(12,18,13,.96);backdrop-filter:blur(12px);border:1px solid var(--line);z-index:30}.footer-nav button{flex:1;padding:12px 8px;font-size:12px}.app{padding-bottom:130px}.hero-title{font-size:30px}}
+    @media (max-width: 640px){.app{padding:12px 12px 130px}.topbar{padding:12px}.brand h1{font-size:24px}.logo{width:48px;height:48px}.metrics{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}.forecast{grid-template-columns:1fr 1fr}.hero-title{font-size:28px}}
+
+    html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+    body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+    input,select,textarea,button{font-size:16px}
+    .install-tip{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;border:1px solid #35583b;background:linear-gradient(180deg,rgba(24,37,26,.96),rgba(13,19,14,.98));margin-top:14px}
+    .install-tip .dot{width:34px;height:34px;display:grid;place-items:center;border-radius:12px;background:#1a281c;border:1px solid var(--line);flex:0 0 auto}
+    .install-tip small{color:var(--muted);line-height:1.45}
+    .fab{position:fixed;right:14px;bottom:88px;z-index:35;border-radius:999px;padding:14px 16px;box-shadow:var(--shadow)}
+    @media (max-width: 640px){
+      .hud{display:grid;grid-template-columns:1fr 1fr;width:100%}
+      .pill{font-size:12px;text-align:center}
+      .cta-row button,.toolbar button,.btn{min-height:48px}
+      .card{padding:15px}
+      .map{min-height:320px}
+      .thumb img{height:150px}
+      .table th,.table td{padding:10px 8px;font-size:13px}
+      .hero-title{font-size:26px}
+    }
+
+  </style>
+</head>
+<body>
+  <div class="app" id="app"></div><button class="fab primary" id="quickAddBtn" aria-label="Quick add sighting">+ Sighting</button>
+  <script>
+    const STANDS = [
+      { id: 1, name: 'Oak Ridge Stand', type: 'Treestand', wind: 'NW / N', x: 26, y: 31, notes: 'Primary scrape line funnel.' },
+      { id: 2, name: 'Creek Bottom Blind', type: 'Ground Blind', wind: 'W / SW', x: 64, y: 68, notes: 'Late season evening food-to-bed transition.' },
+      { id: 3, name: 'South Field Edge', type: 'Treestand', wind: 'N / NE', x: 76, y: 26, notes: 'Best for first-light field entry.' },
+      { id: 4, name: 'North Ridge Saddle', type: 'Hang-on', wind: 'NW', x: 48, y: 16, notes: 'Rut cruising hotspot.' }
+    ];
+
+    const sample = {
+      sessions: [
+        { id: 1, date: '2026-11-05', stand: 'North Ridge Saddle', ampm: 'AM', wind: 'NW', temp: 34, pressure: 30.12, sightings: 7, bucks: 3, notes: 'Heavy chasing on upper bench.', activity: 'High' },
+        { id: 2, date: '2026-11-03', stand: 'Oak Ridge Stand', ampm: 'PM', wind: 'N', temp: 41, pressure: 29.98, sightings: 4, bucks: 1, notes: 'Mature buck skirted scrape at dark.', activity: 'Medium' },
+        { id: 3, date: '2026-10-29', stand: 'South Field Edge', ampm: 'AM', wind: 'NE', temp: 39, pressure: 30.21, sightings: 5, bucks: 2, notes: 'Field entrance movement before sunrise.', activity: 'High' }
+      ],
+      harvests: [
+        { id: 1, date: '2025-11-10', stand: 'Oak Ridge Stand', type: 'Buck', points: 8, weight: 178, time: '07:15', wind: 'NW', notes: 'Cruising scrape line.' },
+        { id: 2, date: '2024-11-12', stand: 'South Field Edge', type: 'Buck', points: 10, weight: 194, time: '17:31', wind: 'SW', notes: 'Caught him scent-checking does.' }
+      ],
+      sightings: [
+        { id: 1, date: '2026-11-07', time: '06:44', location: 'North Ridge Saddle', type: 'Buck', details: 'Tall 10 working ridge', score: 148 },
+        { id: 2, date: '2026-11-07', time: '16:58', location: 'Creek Bottom Blind', type: 'Doe', details: '2 does entering clover', score: 0 },
+        { id: 3, date: '2026-11-06', time: '07:05', location: 'Oak Ridge Stand', type: 'Buck', details: 'Wide 8 trailing doe', score: 132 }
+      ],
+      hitList: [
+        { id: 1, name: 'Wide 8', rack: '8-point / ~132"', age: '3.5 years', lastSeen: 'Oak Ridge Stand', status: 'Active', notes: 'Wide frame, slight crab claw left brow tine.' },
+        { id: 2, name: 'Tall 10', rack: '10-point / ~148"', age: '4.5 years', lastSeen: 'North Ridge Saddle', status: 'Shooter', notes: 'Tall G2/G3, clean chest, daylight twice.' }
+      ],
+      cams: [],
+      weather: { temp: 37, wind: 'NW 11 mph', pressure: 30.18, moon: 'Waxing Gibbous', moonScore: 72 },
+      property: { acreage: 146, county: 'Mock Property', state: 'NC', seasonPhase: 'Peak Rut' }
+    };
+
+    const state = load();
+    function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
+    function storage(){
+      try {
+        const testKey = '__deertracer_test__';
+        localStorage.setItem(testKey, '1');
+        localStorage.removeItem(testKey);
+        return localStorage;
+      } catch (e) {
+        return {
+          getItem: key => window.__deertracer_fallback__?.[key] || null,
+          setItem: (key, value) => {
+            window.__deertracer_fallback__ = window.__deertracer_fallback__ || {};
+            window.__deertracer_fallback__[key] = String(value);
+          },
+          removeItem: key => {
+            if (window.__deertracer_fallback__) delete window.__deertracer_fallback__[key];
+          }
+        };
+      }
+    }
+    const store = storage();
+    function load(){
+      try {
+        return { ...clone(sample), ...JSON.parse(store.getItem('deertracer.pro')||'{}') };
+      } catch (e) {
+        return clone(sample);
+      }
+    }
+    function save(){ store.setItem('deertracer.pro', JSON.stringify(state)); }
+
+    let currentTab = 'dashboard';
+
+    const app = document.getElementById('app');
+    const rutInfo = getRutInfo();
+    render();
+
+    function render(){
+      const totalSightings = state.sessions.reduce((a,b)=>a+(+b.sightings||0),0);
+      const totalBucks = state.sessions.reduce((a,b)=>a+(+b.bucks||0),0);
+      const bestStand = calcBestStand();
+      const recommended = recommendStand();
+      app.innerHTML = `
+        <div class="topbar">
+          <div class="brand">
+            <div class="logo">🦌</div>
+            <div>
+              <h1>DeerTraceR Pro</h1>
+              <small>Hunting intelligence system • journal • pattern board • stand selector</small>
+            </div>
+          </div>
+          <div class="hud">
+            <div class="pill"><strong>${formatDate(new Date())}</strong></div>
+            <div class="pill">Wind <strong>${state.weather.wind}</strong></div>
+            <div class="pill">Pressure <strong>${state.weather.pressure}</strong></div>
+            <div class="pill">Rut <strong>${rutInfo.phase}</strong></div>
+            <div class="pill">Moon <strong>${state.weather.moon}</strong></div>
+          </div>
+        </div>
+
+        <div class="hero">
+          <section class="card">
+            <div class="tag">DeerTraceR Pro • field-ready build</div>
+            <div class="hero-title">Track deer movement, score trail-cam intel, and choose the best stand before you walk in.</div>
+            <div class="sub">This version is built as a self-contained hunting dashboard with offline local storage, property map mockup, session logging, harvest tracking, a hit-list board, rut forecast, weather panel, and a trail-cam upload workflow with in-browser sample analysis.</div><div class="install-tip"><div class="dot">📱</div><div><strong>iPhone-ready web app</strong><br><small>For the most reliable iPhone use, open this file in Safari or Chrome directly from Files or a web host. Home Screen install works best when hosted on a site, but this file will still run as a local mobile app page.</small></div></div>
+            <div class="cta-row">
+              <button class="primary" data-tab="sessions">+ Log Session</button>
+              <button class="success" data-tab="trailcam">📷 Upload Trail Cam</button>
+              <button class="ghost" data-tab="map">🗺️ Open Property Map</button>
+              <button class="warn" id="seedDemo">Reload Demo Data</button>
+            </div>
+            <div class="metrics">
+              <div class="metric"><div class="t">Season Sightings</div><div class="k">${totalSightings}</div></div>
+              <div class="metric"><div class="t">Bucks Logged</div><div class="k">${totalBucks}</div></div>
+              <div class="metric"><div class="t">Best Stand</div><div class="k" style="font-size:20px">${bestStand.name}</div></div>
+              <div class="metric"><div class="t">Recommended Set</div><div class="k" style="font-size:20px">${recommended.name}</div></div>
+            </div>
+          </section>
+          <section class="card">
+            <div class="section-head"><h3>Quick Outlook</h3><span class="tag">Live-style summary</span></div>
+            <div class="list">
+              <div class="item"><div class="item-top"><strong>Rut Phase</strong><span class="badge ${rutInfo.badge}">${rutInfo.phase}</span></div><div class="muted">${rutInfo.desc}</div></div>
+              <div class="item"><div class="item-top"><strong>Stand Recommendation</strong><span class="badge good">Go</span></div><div class="muted"><strong>${recommended.name}</strong> fits the current ${state.weather.wind.split(' ')[0]} wind and recent sightings profile.</div></div>
+              <div class="item"><div class="item-top"><strong>Movement Window</strong><span class="badge warn">Prime</span></div><div class="muted">Best expected activity: <strong>${getMovementWindow()}</strong>. Pressure trend and rut phase favor ridge-to-bedding transitions.</div></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="main">
+          <aside class="sidebar card">
+            <div class="section-head"><h3>Modules</h3></div>
+            <div class="nav">
+              ${navBtn('dashboard','Dashboard')}
+              ${navBtn('map','Property Map')}
+              ${navBtn('trailcam','Trail Cam AI')}
+              ${navBtn('sessions','Hunt Sessions')}
+              ${navBtn('sightings','Sightings Log')}
+              ${navBtn('harvests','Harvest Log')}
+              ${navBtn('hitlist','Hit List')}
+              ${navBtn('forecast','Forecast')}
+            </div>
+          </aside>
+          <section>
+            ${renderTab()}
+          </section>
+        </div>
+
+        <div class="footer-nav">
+          ${footerBtn('dashboard','Home')}
+          ${footerBtn('map','Map')}
+          ${footerBtn('trailcam','Cam')}
+          ${footerBtn('sessions','Log')}
+          ${footerBtn('forecast','Forecast')}
+        </div>
+      `;
+
+      wire();
+    }
+
+    function renderTab(){
+      switch(currentTab){
+        case 'dashboard': return dashboardTab();
+        case 'map': return mapTab();
+        case 'trailcam': return trailTab();
+        case 'sessions': return sessionsTab();
+        case 'sightings': return sightingsTab();
+        case 'harvests': return harvestsTab();
+        case 'hitlist': return hitListTab();
+        case 'forecast': return forecastTab();
+        default: return dashboardTab();
+      }
+    }
+
+    function dashboardTab(){
+      const byStand = STANDS.map(s => ({ name: s.name.split(' ')[0], value: state.sessions.filter(x=>x.stand===s.name).reduce((a,b)=>a+(+b.sightings||0),0) }));
+      return `
+        <div class="grid-2">
+          <section class="card">
+            <div class="section-head"><h2>Activity Overview</h2><span class="tag">Season analytics</span></div>
+            <div class="mini-chart">
+              ${byStand.map((b,i)=>`<div class="bar" style="height:${Math.max(18,b.value*14)}px"><i>${b.value}</i><span>${b.name}</span></div>`).join('')}
+            </div>
+          </section>
+          <section class="card">
+            <div class="section-head"><h2>Recent Intel</h2><span class="tag">Latest entries</span></div>
+            <div class="list">
+              ${state.sightings.slice(0,4).map(s=>`
+                <div class="item">
+                  <div class="item-top"><strong>${s.type} • ${s.location}</strong><span class="muted">${shortDate(s.date)} ${s.time}</span></div>
+                  <div class="muted">${s.details}</div>
+                </div>`).join('')}
+            </div>
+          </section>
+        </div>
+        <div class="split" style="margin-top:16px">
+          <section class="card">
+            <div class="section-head"><h2>Stand Recommendation Engine</h2><span class="tag">Wind-driven</span></div>
+            ${STANDS.map(s=>{
+              const safe = isStandSafe(s, state.weather.wind.split(' ')[0]);
+              return `<div class="item"><div class="item-top"><strong>${s.name}</strong><span class="badge ${safe==='Safe'?'good':safe==='Marginal'?'warn':'bad'}">${safe}</span></div><div class="muted">Preferred wind: ${s.wind} • ${s.notes}</div></div>`;
+            }).join('')}
+          </section>
+          <section class="card">
+            <div class="section-head"><h2>Hit List Snapshot</h2><span class="tag">Target bucks</span></div>
+            <div class="list">
+              ${state.hitList.map(b=>`<div class="item"><div class="item-top"><strong>${b.name}</strong><span class="badge ${b.status==='Shooter'?'good':'warn'}">${b.status}</span></div><div class="muted">${b.rack} • ${b.age} • Last seen ${b.lastSeen}</div><div style="margin-top:8px">${b.notes}</div></div>`).join('')}
+            </div>
+          </section>
+        </div>`;
+    }
+
+    function mapTab(){
+      return `
+        <section class="card">
+          <div class="section-head"><h2>Property Command Map</h2><span class="tag">Mockup terrain board</span></div>
+          <div class="map">
+            <div class="terrain"></div>
+            <div class="path" style="left:8%;top:54%;width:48%;transform:rotate(-18deg)"></div>
+            <div class="path" style="left:45%;top:44%;width:35%;transform:rotate(24deg)"></div>
+            <div class="path" style="left:52%;top:78%;width:20%;transform:rotate(-35deg)"></div>
+            <div class="water"></div>
+            <div class="marker plot" style="left:79%;top:25%">🌽 South Plot</div>
+            <div class="marker plot" style="left:24%;top:73%">🌱 Clover Pocket</div>
+            <div class="marker cam" style="left:35%;top:44%">📷 Cam 01</div>
+            <div class="marker cam" style="left:59%;top:21%">📷 Cam 02</div>
+            <div class="marker deer" style="left:44%;top:19%">🦌 Ridge Cruise</div>
+            <div class="marker deer" style="left:61%;top:58%">🦌 Creek Crossing</div>
+            ${STANDS.map(s=>`<div class="marker stand" style="left:${s.x}%;top:${s.y}%">🪵 ${s.name}</div>`).join('')}
+          </div>
+          <div class="grid-3" style="margin-top:16px">
+            ${STANDS.map(s=>`<div class="item"><div class="item-top"><strong>${s.name}</strong><span class="tag">${s.type}</span></div><div class="muted">Preferred wind: ${s.wind}</div><div style="margin-top:6px">${s.notes}</div></div>`).join('')}
+          </div>
+        </section>`;
+    }
+
+    function trailTab(){
+      return `
+        <div class="split">
+          <section class="card">
+            <div class="section-head"><h2>Trail Cam Analysis</h2><span class="tag">Local browser workflow</span></div>
+            <div class="upload">
+              <div style="font-size:42px">📷</div>
+              <h3 style="margin:8px 0 6px">Drop or choose trail-cam photos</h3>
+              <div class="muted">This build runs fully in-browser. Uploaded photos get a sample field-analysis card so you can test the UI without a paid AI backend.</div>
+              <div class="toolbar" style="justify-content:center">
+                <input type="file" id="camInput" accept="image/*" multiple style="display:none" />
+                <button class="primary" id="pickCam">Choose Photos</button>
+              </div>
+            </div>
+            <div class="thumbs">
+              ${state.cams.length ? state.cams.map(cam=>`
+                <div class="thumb">
+                  <img src="${cam.image}" alt="Trail cam upload" />
+                  <div class="body">
+                    <div class="item-top"><strong>${cam.stand}</strong><span class="badge ${cam.result.shooter?'good':'warn'}">${cam.result.shooter?'Shooter Buck':'Observation'}</span></div>
+                    <div class="muted">${cam.result.summary}</div>
+                    <div style="margin-top:10px;font-size:14px;line-height:1.6">
+                      <div><strong>Rack:</strong> ${cam.result.rack}</div>
+                      <div><strong>Age:</strong> ${cam.result.age}</div>
+                      <div><strong>Behavior:</strong> ${cam.result.behavior}</div>
+                      <div><strong>Recommendation:</strong> ${cam.result.recommendation}</div>
+                    </div>
+                  </div>
+                </div>`).join('') : `<div class="item muted">No uploads yet. Add a photo to populate the analysis cards.</div>`}
+            </div>
+          </section>
+          <section class="card">
+            <div class="section-head"><h2>Analysis Rules</h2><span class="tag">What this build does</span></div>
+            <div class="list">
+              <div class="item"><strong>Fast test mode</strong><div class="muted" style="margin-top:6px">Creates a realistic hunting-analysis card instantly after upload.</div></div>
+              <div class="item"><strong>Optional AI upgrade path</strong><div class="muted" style="margin-top:6px">You can later connect a real image-analysis API endpoint and keep the same UI.</div></div>
+              <div class="item"><strong>Hit-list friendly</strong><div class="muted" style="margin-top:6px">Each result is structured to support buck tracking, naming, and stand recommendations.</div></div>
+            </div>
+          </section>
+        </div>`;
+    }
+
+    function sessionsTab(){
+      return `
+        <div class="split">
+          <section class="card">
+            <div class="section-head"><h2>Log Hunt Session</h2><span class="tag">Field entry</span></div>
+            <form id="sessionForm" class="form-grid">
+              <div><label>Date</label><input name="date" type="date" required /></div>
+              <div><label>Stand</label><select name="stand">${STANDS.map(s=>`<option>${s.name}</option>`).join('')}</select></div>
+              <div><label>AM / PM</label><select name="ampm"><option>AM</option><option>PM</option></select></div>
+              <div><label>Wind</label><select name="wind">${['N','NE','E','SE','S','SW','W','NW'].map(d=>`<option>${d}</option>`).join('')}</select></div>
+              <div><label>Temp (°F)</label><input name="temp" type="number" placeholder="38" /></div>
+              <div><label>Pressure</label><input name="pressure" type="number" step="0.01" placeholder="30.12" /></div>
+              <div><label>Sightings</label><input name="sightings" type="number" placeholder="4" /></div>
+              <div><label>Bucks Seen</label><input name="bucks" type="number" placeholder="2" /></div>
+              <div class="full"><label>Notes</label><textarea name="notes" placeholder="Chasing activity, scrape usage, entry route observations..."></textarea></div>
+              <div><label>Activity</label><select name="activity"><option>High</option><option>Medium</option><option>Low</option></select></div>
+              <div style="display:flex;align-items:end"><button class="primary" type="submit">Save Session</button></div>
+            </form>
+          </section>
+          <section class="card">
+            <div class="section-head"><h2>Recent Sessions</h2><span class="tag">${state.sessions.length} total</span></div>
+            <div class="list">
+              ${state.sessions.map(s=>`<div class="item"><div class="item-top"><strong>${s.stand}</strong><span class="badge ${s.activity==='High'?'good':s.activity==='Medium'?'warn':'bad'}">${s.activity}</span></div><div class="muted">${shortDate(s.date)} • ${s.ampm} • ${s.wind} wind • ${s.temp}°F • ${s.sightings} sightings / ${s.bucks} bucks</div><div style="margin-top:8px">${s.notes||''}</div></div>`).join('')}
+            </div>
+          </section>
+        </div>`;
+    }
+
+    function sightingsTab(){
+      return `
+        <div class="split">
+          <section class="card">
+            <div class="section-head"><h2>Add Sighting</h2><span class="tag">Fast logging</span></div>
+            <form id="sightingForm" class="form-grid">
+              <div><label>Date</label><input name="date" type="date" required /></div>
+              <div><label>Time</label><input name="time" type="time" required /></div>
+              <div><label>Location</label><select name="location">${STANDS.map(s=>`<option>${s.name}</option>`).join('')}</select></div>
+              <div><label>Type</label><select name="type"><option>Buck</option><option>Doe</option><option>Fawn</option></select></div>
+              <div><label>Score Estimate</label><input name="score" type="number" placeholder="140" /></div>
+              <div class="full"><label>Details</label><textarea name="details" placeholder="Describe direction of travel, behavior, number of deer, and relation to wind."></textarea></div>
+              <div><button class="primary" type="submit">Save Sighting</button></div>
+            </form>
+          </section>
+          <section class="card">
+            <div class="section-head"><h2>Sightings Log</h2><span class="tag">Chronological</span></div>
+            <table class="table">
+              <thead><tr><th>Date</th><th>Time</th><th>Location</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>${state.sightings.map(s=>`<tr><td>${shortDate(s.date)}</td><td>${s.time}</td><td>${s.location}</td><td>${s.type}</td><td>${s.details}</td></tr>`).join('')}</tbody>
+            </table>
+          </section>
+        </div>`;
+    }
+
+    function harvestsTab(){
+      return `
+        <div class="split">
+          <section class="card">
+            <div class="section-head"><h2>Add Harvest</h2><span class="tag">Archive the win</span></div>
+            <form id="harvestForm" class="form-grid">
+              <div><label>Date</label><input name="date" type="date" required /></div>
+              <div><label>Time</label><input name="time" type="time" required /></div>
+              <div><label>Stand</label><select name="stand">${STANDS.map(s=>`<option>${s.name}</option>`).join('')}</select></div>
+              <div><label>Type</label><select name="type"><option>Buck</option><option>Doe</option></select></div>
+              <div><label>Points</label><input name="points" type="number" placeholder="8" /></div>
+              <div><label>Weight</label><input name="weight" type="number" placeholder="180" /></div>
+              <div><label>Wind</label><select name="wind">${['N','NE','E','SE','S','SW','W','NW'].map(d=>`<option>${d}</option>`).join('')}</select></div>
+              <div class="full"><label>Notes</label><textarea name="notes" placeholder="Shot details, recovery, and conditions."></textarea></div>
+              <div><button class="primary" type="submit">Save Harvest</button></div>
+            </form>
+          </section>
+          <section class="card">
+            <div class="section-head"><h2>Harvest History</h2><span class="tag">Wall-worthy memories</span></div>
+            <div class="list">
+              ${state.harvests.map(h=>`<div class="item"><div class="item-top"><strong>${h.type} • ${h.points ? h.points+' point' : 'No points logged'}</strong><span class="muted">${shortDate(h.date)} ${h.time}</span></div><div>${h.stand} • ${h.weight} lbs • ${h.wind} wind</div><div class="muted" style="margin-top:8px">${h.notes}</div></div>`).join('')}
+            </div>
+          </section>
+        </div>`;
+    }
+
+    function hitListTab(){
+      return `
+        <div class="split">
+          <section class="card">
+            <div class="section-head"><h2>Add Buck to Hit List</h2><span class="tag">Track individual deer</span></div>
+            <form id="hitForm" class="form-grid">
+              <div><label>Buck Name</label><input name="name" placeholder="Split G2 10" required /></div>
+              <div><label>Status</label><select name="status"><option>Shooter</option><option>Active</option><option>Monitor</option></select></div>
+              <div><label>Rack</label><input name="rack" placeholder='10-point / ~145"' /></div>
+              <div><label>Age</label><input name="age" placeholder="4.5 years" /></div>
+              <div><label>Last Seen</label><select name="lastSeen">${STANDS.map(s=>`<option>${s.name}</option>`).join('')}</select></div>
+              <div class="full"><label>Notes</label><textarea name="notes" placeholder="Distinctive features, daylight behavior, likely bedding area."></textarea></div>
+              <div><button class="primary" type="submit">Add Buck</button></div>
+            </form>
+          </section>
+          <section class="card">
+            <div class="section-head"><h2>Current Hit List</h2><span class="tag">${state.hitList.length} bucks</span></div>
+            <div class="list">
+              ${state.hitList.map(b=>`<div class="item"><div class="item-top"><strong>${b.name}</strong><span class="badge ${b.status==='Shooter'?'good':'warn'}">${b.status}</span></div><div class="muted">${b.rack} • ${b.age} • Last seen ${b.lastSeen}</div><div style="margin-top:8px">${b.notes}</div></div>`).join('')}
+            </div>
+          </section>
+        </div>`;
+    }
+
+    function forecastTab(){
+      const days = buildForecast();
+      return `
+        <div class="grid-2">
+          <section class="card">
+            <div class="section-head"><h2>5-Day Hunt Forecast</h2><span class="tag">Planning board</span></div>
+            <div class="forecast">
+              ${days.map(d=>`<div class="day"><div class="muted">${d.label}</div><strong>${d.temp}°F</strong><div>${d.wind}</div><div class="badge ${d.rating==='Best'?'good':d.rating==='Fair'?'warn':'bad'}" style="margin-top:8px">${d.rating}</div></div>`).join('')}
+            </div>
+          </section>
+          <section class="card">
+            <div class="section-head"><h2>Rut & Pressure Outlook</h2><span class="tag">Decision support</span></div>
+            <div class="list">
+              <div class="item"><div class="item-top"><strong>Current phase</strong><span class="badge ${rutInfo.badge}">${rutInfo.phase}</span></div><div class="muted">${rutInfo.desc}</div></div>
+              <div class="item"><div class="item-top"><strong>Best time window</strong><span class="badge good">${getMovementWindow()}</span></div><div class="muted">Pressure around ${state.weather.pressure} and the present rut phase support travel through funnels and downwind doe bedding edges.</div></div>
+              <div class="item"><div class="item-top"><strong>Suggested stand</strong><span class="badge warn">${recommendStand().name}</span></div><div class="muted">Choose the stand that best matches today’s wind and where your last two buck sightings occurred.</div></div>
+            </div>
+          </section>
+        </div>`;
+    }
+
+    function navBtn(tab,label){ return `<button class="${currentTab===tab?'active':''}" data-tab="${tab}">${label}</button>` }
+    function footerBtn(tab,label){ return `<button class="${currentTab===tab?'active':''}" data-tab="${tab}">${label}</button>` }
+
+    function wire(){
+      document.getElementById('quickAddBtn')?.addEventListener('click', ()=>{ currentTab='sightings'; render(); setTimeout(()=>document.getElementById('sightingDate')?.focus(),80); });
+      document.querySelectorAll('[data-tab]').forEach(btn=>btn.onclick=()=>{ currentTab = btn.dataset.tab; render(); window.scrollTo({top:0,behavior:'smooth'}); });
+      const seed = document.getElementById('seedDemo'); if(seed) seed.onclick=()=>{ localStorage.removeItem('deertracer.pro'); Object.assign(state, clone(sample)); save(); render(); };
+
+      const sf = document.getElementById('sessionForm');
+      if(sf) sf.onsubmit = e => { e.preventDefault(); const d = Object.fromEntries(new FormData(sf).entries()); d.id = Date.now(); state.sessions.unshift(d); save(); currentTab='sessions'; render(); };
+
+      const sigf = document.getElementById('sightingForm');
+      if(sigf) sigf.onsubmit = e => { e.preventDefault(); const d = Object.fromEntries(new FormData(sigf).entries()); d.id = Date.now(); state.sightings.unshift(d); save(); currentTab='sightings'; render(); };
+
+      const hf = document.getElementById('harvestForm');
+      if(hf) hf.onsubmit = e => { e.preventDefault(); const d = Object.fromEntries(new FormData(hf).entries()); d.id = Date.now(); state.harvests.unshift(d); save(); currentTab='harvests'; render(); };
+
+      const hitf = document.getElementById('hitForm');
+      if(hitf) hitf.onsubmit = e => { e.preventDefault(); const d = Object.fromEntries(new FormData(hitf).entries()); d.id = Date.now(); state.hitList.unshift(d); save(); currentTab='hitlist'; render(); };
+
+      const pick = document.getElementById('pickCam'); const input = document.getElementById('camInput');
+      if(pick && input){ pick.onclick = ()=> input.click(); input.onchange = e => handleFiles(e.target.files); }
+    }
+
+    function handleFiles(files){
+      [...files].forEach(file=>{
+        const reader = new FileReader();
+        reader.onload = () => {
+          state.cams.unshift({
+            id: Date.now()+Math.random(), image: reader.result, stand: recommendStand().name,
+            result: mockAnalyze(file.name)
+          });
+          save(); render();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function mockAnalyze(name){
+      const templates = [
+        { shooter:true, rack:'10-point, ~145"', age:'4.5 years', behavior:'Cruising edge cover just after sunrise.', recommendation:'Hunt downwind tomorrow morning with a cautious entry.', summary:'Likely mature shooter buck with daylight movement near a transition edge.' },
+        { shooter:false, rack:'8-point, ~128"', age:'3.5 years', behavior:'Nose to ground checking does.', recommendation:'Good inventory buck. Monitor scrape cluster and stay off the plot.', summary:'Solid buck but not top-end shooter based on body and frame.' },
+        { shooter:false, rack:'Doe group / no antlers visible', age:'Mixed', behavior:'Feeding in destination plot at dusk.', recommendation:'Good indicator of doe concentration and future buck movement.', summary:'Doe activity suggests a productive evening food source pattern.' }
+      ];
+      const t = templates[Math.abs(hashCode(name)) % templates.length];
+      return t;
+    }
+
+    function calcBestStand(){
+      const counts = {};
+      state.sessions.forEach(s=> counts[s.stand] = (counts[s.stand]||0) + (+s.sightings||0) + ((+s.bucks||0)*2));
+      const best = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+      return { name: best ? best[0] : STANDS[0].name };
+    }
+    function recommendStand(){
+      const wind = state.weather.wind.split(' ')[0];
+      const safe = STANDS.map(s => ({...s, score: scoreStand(s, wind)})).sort((a,b)=>b.score-a.score);
+      return safe[0] || STANDS[0];
+    }
+    function scoreStand(stand, wind){
+      let score = 0;
+      if(stand.wind.includes(wind)) score += 6;
+      score += state.sessions.filter(s=>s.stand===stand.name).reduce((a,b)=>a+(+b.bucks||0),0);
+      score += state.sightings.filter(s=>s.location===stand.name && s.type==='Buck').length * 2;
+      return score;
+    }
+    function isStandSafe(stand, wind){
+      if(stand.wind.includes(wind)) return 'Safe';
+      if(['N','S','E','W'].some(d=>stand.wind.includes(d) && wind.includes(d))) return 'Marginal';
+      return 'Poor';
+    }
+    function getRutInfo(){
+      const d = new Date(); const m = d.getMonth()+1, day = d.getDate();
+      if(m===10 && day>=20) return { phase:'Pre-Rut', desc:'Scrapes and daylight cruising pick up. Focus on transition lines and first-cold-front movement.', badge:'warn' };
+      if(m===11 && day<=12) return { phase:'Peak Rut', desc:'All-day sits and terrain funnels shine as bucks cover ground seeking hot does.', badge:'good' };
+      if(m===11 && day<=24) return { phase:'Seeking', desc:'Secondary movement remains good near doe groups and food-to-bed transitions.', badge:'warn' };
+      if(m===12) return { phase:'Late Season', desc:'Recovering bucks key on food and security cover. Hunt evenings carefully.', badge:'bad' };
+      return { phase:'Off Season', desc:'Use this time to inventory, scout access, and tighten your stand plan.', badge:'bad' };
+    }
+    function getMovementWindow(){
+      const p = +state.weather.pressure;
+      if(rutInfo.phase==='Peak Rut') return 'All day / first and last light';
+      if(p >= 30.1) return 'First 2 hours of daylight';
+      if(p >= 29.9) return 'Last 90 minutes of daylight';
+      return 'Low confidence / hunt tight cover';
+    }
+    function buildForecast(){
+      const dirs=['NW','N','NE','W','SW'];
+      return Array.from({length:5},(_,i)=>{
+        const d = new Date(); d.setDate(d.getDate()+i);
+        const temp = Math.round(34 + Math.sin(i*1.3)*6 + i);
+        const wind = dirs[i%dirs.length] + ' ' + (8+i) + ' mph';
+        const rating = i===1 || i===3 ? 'Best' : i===0 || i===4 ? 'Fair' : 'Tough';
+        return { label: d.toLocaleDateString(undefined,{weekday:'short'}), temp, wind, rating };
+      });
+    }
+    function shortDate(v){ try { return new Date(v+'T00:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'}); } catch { return v; } }
+    function formatDate(v){ return new Date(v).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'}); }
+    function hashCode(str){ let h=0; for(let i=0;i<str.length;i++) h=((h<<5)-h)+str.charCodeAt(i)|0; return h; }
+  </script>
+
+
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function (err) {
+          console.log('Service worker registration failed:', err);
+        });
+      });
+    }
+  </script>
+
+</body>
+</html>
